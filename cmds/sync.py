@@ -48,7 +48,8 @@ def sync(src: Path, dst: Path, remote_host: str, packages: Optional[str], build:
 
         print("Building roverflake remotely...")
         remote_colcon_cmd = (
-            "cd " + shlex.quote(str(dst)) + " && "
+            "cd " + shlex.quote(str(dst)) + "; "
+            + "echo 'test'; "
             + "source /opt/ros/humble/setup.bash && "
             + "bash -lc "
             + shlex.quote(
