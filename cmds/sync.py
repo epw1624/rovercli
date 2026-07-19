@@ -35,7 +35,7 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
     typer.echo(f"Transferring files to {remote_host}:{dst}")
 
     rsync_cmd = [
-        "rsync", "-azcL",
+        "rsync", "-azc",
         "--delete",
         "--stats",
         str(src / "install"),
