@@ -11,8 +11,25 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
         typer.echo(f"Source directory not found in Roverflake root: {src}")
         raise typer.Exit(code=1)
     
+    typer.echo(f"Transferring source files to {remote_host}:{dst}")
+
+    rsync_cmd = [
+        "rsync", "-avc",
+        "--ignore-times",
+        "--stats",
+        str(src_dir),
+        f"{remote_host}:{str(dst)}"
+    ]
+
+    rsync_result = subprocess.run(rsync_cmd)
+    if rsync_result.returncode != 0:
+        typer.echo("Rsync src transfer failed")
+        raise typer.Exit(code=1)
+    
+    typer.echo("Source transfer complete!")
+
     if build:
-        typer.echo("Compiling roverflake project...")
+        typer.echo("Building roverflake locally...")
 
         colcon_cmd = [
             "colcon", "build",
@@ -21,45 +38,29 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
             "--install-base", str(src / "install"),
         ]
 
-        # My laptop can't handle colcon builds with all cores and it only has 5
-        # So this is to limit the number of cores
-        # Should maybe remove when building on a better machine
+        # Limit local parallelism for lower-core development machines.
         env_vars = os.environ.copy()
         env_vars["MAKEFLAGS"] = "-j3"
 
         build_result = subprocess.run(colcon_cmd, env=env_vars)
         if build_result.returncode != 0:
-            typer.echo("Compilation failed. File transfer aborted")
+            typer.echo("Local build failed")
             raise typer.Exit(code=1)
-    
-    typer.echo(f"Transferring files to {remote_host}:{dst}")
 
-    rsync_cmd = [
-        "rsync", "-avc",
-        "--ignore-times",
-        "--stats",
-        str(src / "install"),
-        f"{remote_host}:{str(dst)}"
-    ]
-
-    rsync_result = subprocess.run(rsync_cmd)
-    if rsync_result.returncode != 0:
-        typer.echo("Rsync install transfer failed")
-        raise typer.Exit(code=1)
-
-    rsync_cmd = [
-        "rsync", "-avc",
-        "--ignore-times",
-        "--stats",
-        str(src / "build"),
-        f"{remote_host}:{str(dst)}"
-    ]
-    rsync_result = subprocess.run(rsync_cmd)
-    if rsync_result.returncode != 0:
-        typer.echo("Rsync build transfer failed")
-        raise typer.Exit(code=1)
-    
-    typer.echo("File transfer complete!")
+        typer.echo("Building roverflake remotely...")
+        remote_colcon_cmd = (
+            "bash -lc "
+            + shlex.quote(
+                "colcon build "
+                f"--base-paths {shlex.quote(str(dst / 'src'))} "
+                f"--build-base {shlex.quote(str(dst / 'build'))} "
+                f"--install-base {shlex.quote(str(dst / 'install'))}"
+            )
+        )
+        remote_build_result = subprocess.run(["ssh", remote_host, remote_colcon_cmd])
+        if remote_build_result.returncode != 0:
+            typer.echo("Remote build failed")
+            raise typer.Exit(code=1)
 
     # now, run source install/setup.bash locally
     setup_script = src / "install" / "setup.bash"
