@@ -4,10 +4,11 @@ import shlex
 import subprocess
 from typing import Optional
 
-def sync(src: Path, dst: Path, remote_host: str, packages: Optional[str], build: bool = True):
-    
-    src_dir = Path(src) / "src"
-    dst = Path(dst)
+def sync(src: str, dst: str, remote_host: str, packages: Optional[str], build: bool = True):
+    print(f"Syncing from {src} to {remote_host}:{dst} with build={build} and packages={packages}")
+
+    src_dir = Path(str(src)) / "src"
+    dst = Path(str(dst))
     
     if not src_dir.exists():
         raise ValueError(f"Source directory '{src_dir}' does not exist.")
