@@ -19,7 +19,6 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
             "--base-paths", str(src_dir),
             "--build-base", str(src / "build"),
             "--install-base", str(src / "install"),
-            "--symlink-install"
         ]
 
         # My laptop can't handle colcon builds with all cores and it only has 5
