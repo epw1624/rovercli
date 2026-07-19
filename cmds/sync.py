@@ -7,7 +7,8 @@ from typing import Optional
 def sync(src: str, dst: str, remote_host: str, packages: Optional[str], build: bool = True):
     print(f"Syncing from {src} to {remote_host}:{dst} with build={build} and packages={packages}")
 
-    src_dir = Path(str(src)) / "src"
+    src = Path(str(src)).expanduser()
+    src_dir = src / "src"
     dst = Path(str(dst))
     
     if not src_dir.exists():
