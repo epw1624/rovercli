@@ -48,21 +48,3 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
         if remote_build_result.returncode != 0:
             typer.echo("Remote build failed")
             raise typer.Exit(code=1)
-
-    # now, run source install/setup.bash locally
-    setup_script = src / "install" / "setup.bash"
-    if setup_script.exists():
-        setup_script_quoted = shlex.quote(str(setup_script))
-        subprocess.run(["bash", "-lc", f"source {setup_script_quoted}"], check=True)
-    else:
-        typer.echo(f"Setup script not found: {setup_script}")
-
-    # now, run source install/setup.bash remotely
-    remote_setup_script = dst / "install" / "setup.bash"
-    remote_setup_script_quoted = shlex.quote(str(remote_setup_script))
-    remote_cmd = (
-        f"if [ -f {remote_setup_script_quoted} ]; then "
-        f"bash -lc 'source {remote_setup_script_quoted}'; "
-        f"else echo Remote setup script not found: {remote_setup_script_quoted}; exit 1; fi"
-    )
-    subprocess.run(["ssh", remote_host, remote_cmd], check=True)
