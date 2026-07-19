@@ -14,7 +14,7 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
     typer.echo(f"Transferring source files to {remote_host}:{dst}")
 
     rsync_cmd = [
-        "rsync", "-avc",
+        "rsync", "-azc",
         "--ignore-times",
         "--stats",
         str(src_dir),
@@ -29,27 +29,14 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
     typer.echo("Source transfer complete!")
 
     if build:
-        typer.echo("Building roverflake locally...")
-
-        colcon_cmd = [
-            "colcon", "build",
-            "--base-paths", str(src_dir),
-            "--build-base", str(src / "build"),
-            "--install-base", str(src / "install"),
-        ]
-
         # Limit local parallelism for lower-core development machines.
         env_vars = os.environ.copy()
         env_vars["MAKEFLAGS"] = "-j3"
 
-        build_result = subprocess.run(colcon_cmd, env=env_vars)
-        if build_result.returncode != 0:
-            typer.echo("Local build failed")
-            raise typer.Exit(code=1)
-
         typer.echo("Building roverflake remotely...")
         remote_colcon_cmd = (
-            "bash -lc "
+            "source /opt/ros/humble/setup.bash && "
+            + "bash -lc "
             + shlex.quote(
                 "colcon build "
                 f"--base-paths {shlex.quote(str(dst / 'src'))} "
