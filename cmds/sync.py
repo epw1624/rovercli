@@ -1,10 +1,11 @@
 import os
+from pathlib import Path
+import shlex
 import subprocess
 import typer
-import shlex
-from pathlib import Path
+from typing import Optional
 
-def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
+def sync(src: Path, dst: Path, remote_host: str, packages: Optional[str], build: bool = True):
     src_dir = src / "src"
     
     if not src_dir.exists():
@@ -13,13 +14,25 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
     
     typer.echo(f"Transferring source files to {remote_host}:{dst}")
 
-    rsync_cmd = [
-        "rsync", "-azc",
-        "--ignore-times",
-        "--stats",
-        str(src_dir),
-        f"{remote_host}:{str(dst)}"
-    ]
+    rsync_cmd = ["rsync", "-azc", "--stats"]
+
+    if packages:
+        package_list = packages.split()
+
+        for package in package_list:
+            package_path = src_dir / package
+            if not package_path.exists():
+                typer.echo(f"Error: Package directory '{package}' does not exist.")
+                raise typer.Exit(code=1)
+            rsync_cmd.append(str(package_path))
+
+        remote_target = f"{remote_host}:{dst}"
+    else:
+        rsync_cmd.append("--delete")
+        rsync_cmd.append(str(src_dir))
+        remote_target = f"{remote_host}:{dst}"
+
+    rsync_cmd.append(remote_target)
 
     rsync_result = subprocess.run(rsync_cmd)
     if rsync_result.returncode != 0:
@@ -29,7 +42,7 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
     typer.echo("Source transfer complete!")
 
     if build:
-        # Limit local parallelism for lower-core development machines.
+        # Limit number of cores to not freeze less powerful machines like Raspberry Pi
         env_vars = os.environ.copy()
         env_vars["MAKEFLAGS"] = "-j3"
 
@@ -44,6 +57,10 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
                 f"--install-base {shlex.quote(str(dst / 'install'))}"
             )
         )
+
+        if packages:
+            colcon_cmd += f" --packages-select {packages}"
+
         remote_build_result = subprocess.run(["ssh", remote_host, remote_colcon_cmd])
         if remote_build_result.returncode != 0:
             typer.echo("Remote build failed")
