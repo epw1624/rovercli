@@ -11,7 +11,7 @@ sync_app = typer.Typer()
 @sync_app.callback(invoke_without_command=True)
 def sync(
     context: typer.Context, 
-    src_root: Path = typer.Argument(..., help="Sync source (Roverflake root)"), 
+    src_root: Path = typer.Argument("~/Roverflake2", help="Sync source (Roverflake root)"), 
     dst_root: Path = typer.Argument("~/Roverflake2", help="Sync remote destination (Roverflake root)"),
     remote_host: str = typer.Argument("rv@192.168.1.4", help="Remote host for syncing"), 
     build: bool = typer.Option(True, "--build", "-b", help="Build the project before syncing")
