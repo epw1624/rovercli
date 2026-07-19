@@ -36,7 +36,6 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
 
     rsync_cmd = [
         "rsync", "-azc",
-        "--delete",
         "--stats",
         str(src / "install"),
         f"{remote_host}:{str(dst)}"
@@ -49,7 +48,6 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
 
     rsync_cmd = [
         "rsync", "-azc",
-        "--delete",
         "--stats",
         str(src / "build"),
         f"{remote_host}:{str(dst)}"
