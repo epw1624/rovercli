@@ -1,6 +1,5 @@
 from pathlib import Path
 import argparse
-from typing import Optional
 
 import cmds
 
@@ -9,8 +8,8 @@ sync_app = app.add_subparsers(dest="command")
 
 def sync(args):
     cmds.sync(
-        Path(args.src_root),
-        Path(args.dst_root),
+        args.src_root,
+        args.dst_root,
         remote_host=args.remote_host,
         build=args.build,
         packages=args.packages,
