@@ -1,29 +1,32 @@
 from pathlib import Path
-import typer
+import argparse
 from typing import Optional
 
 import cmds
 
-app = typer.Typer(help="Rover Command Line Interface")
+app = argparse.ArgumentParser(description="Rover Command Line Interface")
+sync_app = app.add_subparsers(dest="command")
 
-sync_app = typer.Typer()
-
-@sync_app.callback()
-def sync(
-    context: typer.Context, 
-    src_root: Path = typer.Argument("~/Roverflake2", help="Sync source (Roverflake root)"), 
-    dst_root: Path = typer.Argument("~/Roverflake2", help="Sync remote destination (Roverflake root)"),
-    remote_host: str = typer.Argument("rv@192.168.1.4", help="Remote host for syncing"), 
-    build: bool = typer.Argument(True, help="Build the project before syncing"),
-    packages: Optional[str] = typer.Argument(
-        None, 
-        help="Space-separated list of packages to transfer and build (e.g., 'arm_control drive_control')"
+def sync(args):
+    cmds.sync(
+        Path(args.src_root),
+        Path(args.dst_root),
+        remote_host=args.remote_host,
+        build=args.build,
+        packages=args.packages,
     )
-):
-    if context.invoked_subcommand is None:
-        cmds.sync(src_root, dst_root, remote_host=remote_host, build=build, packages=packages)
 
-app.add_typer(sync_app, name="sync")
+sync_parser = sync_app.add_parser("sync")
+sync_parser.add_argument("--src_root", default="~/Roverflake2", help="Sync source (Roverflake root)")
+sync_parser.add_argument("--dst_root", default="~/Roverflake2", help="Sync remote destination (Roverflake root)")
+sync_parser.add_argument("--remote_host", default="rv@192.168.1.4", help="Remote host for syncing")
+sync_parser.add_argument("--build", type=bool, default=True, help="Build the project before syncing")
+sync_parser.add_argument("--packages", default=None, help="Space-separated list of packages to transfer and build (e.g., 'arm_control drive_control')")
+sync_parser.set_defaults(func=sync)
 
 if __name__ == "__main__":
-    app()
+    args = app.parse_args()
+    if hasattr(args, "func"):
+        args.func(args)
+    else:
+        app.print_help()
