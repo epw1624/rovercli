@@ -35,7 +35,8 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
     typer.echo(f"Transferring files to {remote_host}:{dst}")
 
     rsync_cmd = [
-        "rsync", "-azc",
+        "rsync", "-avc",
+        "--ignore-times",
         "--stats",
         str(src / "install"),
         f"{remote_host}:{str(dst)}"
@@ -47,7 +48,8 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
         raise typer.Exit(code=1)
 
     rsync_cmd = [
-        "rsync", "-azc",
+        "rsync", "-avc",
+        "--ignore-times",
         "--stats",
         str(src / "build"),
         f"{remote_host}:{str(dst)}"
