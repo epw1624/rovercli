@@ -49,7 +49,6 @@ def sync(src: Path, dst: Path, remote_host: str, packages: Optional[str], build:
         print("Building roverflake remotely...")
         remote_colcon_cmd = (
             "cd " + shlex.quote(str(dst)) + "; "
-            + "echo 'test'; "
             + "source /opt/ros/humble/setup.bash && "
             + "bash -lc "
             + shlex.quote(
@@ -61,6 +60,7 @@ def sync(src: Path, dst: Path, remote_host: str, packages: Optional[str], build:
         )
 
         if packages:
+            print(f"Building only selected packages: {packages}")
             remote_colcon_cmd += f" --packages-select {packages}"
 
         remote_build_result = subprocess.run(["ssh", remote_host, remote_colcon_cmd])
