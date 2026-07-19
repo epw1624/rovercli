@@ -45,7 +45,19 @@ def sync(src: Path, dst: Path, remote_host: str, build: bool = True):
 
     rsync_result = subprocess.run(rsync_cmd)
     if rsync_result.returncode != 0:
-        typer.echo("Rsync file transfer failed")
+        typer.echo("Rsync install transfer failed")
+        raise typer.Exit(code=1)
+
+    rsync_cmd = [
+        "rsync", "-azc",
+        "--delete",
+        "--stats",
+        str(src / "build"),
+        f"{remote_host}:{str(dst)}"
+    ]
+    rsync_result = subprocess.run(rsync_cmd)
+    if rsync_result.returncode != 0:
+        typer.echo("Rsync build transfer failed")
         raise typer.Exit(code=1)
     
     typer.echo("File transfer complete!")
