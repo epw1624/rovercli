@@ -23,6 +23,9 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
     rsync_cmd = ["rsync", "-azc", "--stats"]
 
     if packages:
+        external_packages = src_dir / "external_packages"
+        if external_packages.exists():
+            rsync_cmd.append(str(external_packages))
         for package in packages:
             package_path = src_dir / package
             if not package_path.exists():
