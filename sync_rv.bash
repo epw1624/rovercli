@@ -1,1 +1,1 @@
-python3 main.py sync --remote-host rv@192.168.1.4 --packages arm_hardware_interface cameras_cpp drive_control end_effector_control ptz_cam rover_arm_common rover_gnss rover_launchers rover_msgs rover_utils
+python3 main.py sync --remote-host rv@192.168.1.4 --packages arm_hardware_interface cameras_cpp drive_control end_effector_control ptz_cam rover_arm_common rover_gnss rover_launchers rover_msgs rover_utils rover_manager
