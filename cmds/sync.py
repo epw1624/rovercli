@@ -52,7 +52,6 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
         remote_colcon_cmd = (
             f"cd {str(dst_path)}; "
             + "source /opt/ros/humble/setup.bash && "
-            + "bash -lc "
             + "colcon build "
             + f"--base-paths {str(dst_path / 'src')} "
             + f"--build-base {str(dst_path / 'build')} "
