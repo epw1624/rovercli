@@ -6,7 +6,10 @@ from typing import Optional
 def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], build: bool = True):
 
     src_path = Path.home() / src
-    dst_path = Path("~") / dst
+    if packages:
+        dst_path = Path("~") / dst / "src"
+    else:
+        dst_path = Path("~") / dst
 
     print(f"Syncing from {src_path} to {remote_host}:{dst_path} with build={build} and packages={packages}")
 
