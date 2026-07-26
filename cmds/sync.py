@@ -6,10 +6,11 @@ from typing import Optional
 def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], build: bool = True):
 
     src_path = Path.home() / src
+    dst_root = Path("~") / dst
     if packages:
-        dst_path = Path("~") / dst / "src"
+        dst_path = dst_root / "src"
     else:
-        dst_path = Path("~") / dst
+        dst_path = dst_root
 
     print(f"Syncing from {src_path} to {remote_host}:{dst_path} with build={build} and packages={packages}")
 
@@ -56,12 +57,12 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
 
         print("Building roverflake remotely...")
         remote_colcon_cmd = (
-            f"cd {str(dst_path)}; "
+            f"cd {str(dst_root)}; "
             + "source /opt/ros/humble/setup.bash && "
             + "colcon build "
-            + f"--base-paths {str(dst_path / 'src')} "
-            + f"--build-base {str(dst_path / 'build')} "
-            + f"--install-base {str(dst_path / 'install')} "
+            + f"--base-paths {str(dst_root / 'src')} "
+            + f"--build-base {str(dst_root / 'build')} "
+            + f"--install-base {str(dst_root / 'install')} "
             + f"--symlink-install "
         )
 
