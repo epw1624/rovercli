@@ -1,20 +1,21 @@
 import os
 from pathlib import Path
-import shlex
 import subprocess
 from typing import Optional
 
 def sync(src: str, dst: str, remote_host: str, packages: Optional[str], build: bool = True):
-    print(f"Syncing from {src} to {remote_host}:{dst} with build={build} and packages={packages}")
 
-    src = Path(str(src)).expanduser()
-    src_dir = src / "src"
-    dst = Path(str(dst))
+    src_path = Path.home() / src
+    dst_path = Path("~") / dst
+
+    print(f"Syncing from {src_path} to {remote_host}:{dst_path} with build={build} and packages={packages}")
+
+    src_dir = src_path / "src"
     
     if not src_dir.exists():
         raise ValueError(f"Source directory '{src_dir}' does not exist.")
     
-    print(f"Transferring source files to {remote_host}:{dst}")
+    print(f"Transferring source files to {remote_host}:{dst_path}...")
 
     rsync_cmd = ["rsync", "-azc", "--stats"]
 
@@ -28,14 +29,15 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[str], build: b
                 raise ValueError(f"Package directory '{package}' does not exist.")
             rsync_cmd.append(str(package_path))
 
-        remote_target = f"{remote_host}:{dst}"
+        remote_target = f"{remote_host}:{dst_path}"
     else:
         rsync_cmd.append("--delete")
         rsync_cmd.append(str(src_dir))
-        remote_target = f"{remote_host}:{dst}"
+        remote_target = f"{remote_host}:{dst_path}"
 
     rsync_cmd.append(remote_target)
 
+    print(f"Running rsync command: {' '.join(rsync_cmd)}")
     rsync_result = subprocess.run(rsync_cmd)
     if rsync_result.returncode != 0:
         print("Rsync src transfer failed")
@@ -50,15 +52,14 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[str], build: b
 
         print("Building roverflake remotely...")
         remote_colcon_cmd = (
-            "cd " + shlex.quote(str(dst)) + "; "
+            f"cd {str(dst_path)}; "
             + "source /opt/ros/humble/setup.bash && "
             + "bash -lc "
-            + shlex.quote(
-                "colcon build "
-                f"--base-paths {shlex.quote(str(dst / 'src'))} "
-                f"--build-base {shlex.quote(str(dst / 'build'))} "
-                f"--install-base {shlex.quote(str(dst / 'install'))}"
-            )
+            + "colcon build "
+            + f"--base-paths {str(dst_path / 'src')} "
+            + f"--build-base {str(dst_path / 'build')} "
+            + f"--install-base {str(dst_path / 'install')}"
+            + f"--symlink-install "
         )
 
         if packages:
