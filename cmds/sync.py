@@ -61,7 +61,7 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
 
         if packages:
             print(f"Building only selected packages: {packages}")
-            remote_colcon_cmd += f" --packages-select {packages}"
+            remote_colcon_cmd += f" --packages-select {' '.join(packages)}"
 
         remote_build_result = subprocess.run(["ssh", remote_host, remote_colcon_cmd])
         if remote_build_result.returncode != 0:
