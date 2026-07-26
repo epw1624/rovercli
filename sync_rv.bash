@@ -1,0 +1,1 @@
+python main.py sync --remote-host rv@192.168.1.4
