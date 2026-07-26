@@ -26,8 +26,8 @@ def setup_sync(app: argparse.ArgumentParser):
         )
 
     sync_parser = sync_app.add_parser("sync")
-    sync_parser.add_argument("--src-root", default="Roverflake2", help="Sync source from home directory")
-    sync_parser.add_argument("--dst-root", default="Roverflake2", help="Sync remote destination from home directory")
+    sync_parser.add_argument("--src-root", default="RoverFlake2", help="Sync source from home directory")
+    sync_parser.add_argument("--dst-root", default="RoverFlake2", help="Sync remote destination from home directory")
     sync_parser.add_argument("--remote-host", default="rv@192.168.1.4", help="Remote host for syncing")
     sync_parser.add_argument(
         "--no-build",
