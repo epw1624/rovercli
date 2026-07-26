@@ -34,7 +34,7 @@ def setup_sync(app: argparse.ArgumentParser):
         action="store_true",
         help="Disable building the project after syncing",
     )
-    sync_parser.add_argument("--packages", default=None, help="Space-separated list of packages to transfer and build (e.g., 'arm_control drive_control')")
+    sync_parser.add_argument("--packages", nargs = "+", default=None, help="Space-separated list of packages to transfer and build (e.g., 'arm_control drive_control')")
     sync_parser.set_defaults(func=sync)
 
 if __name__ == "__main__":

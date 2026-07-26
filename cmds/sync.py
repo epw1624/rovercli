@@ -3,7 +3,7 @@ from pathlib import Path
 import subprocess
 from typing import Optional
 
-def sync(src: str, dst: str, remote_host: str, packages: Optional[str], build: bool = True):
+def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], build: bool = True):
 
     src_path = Path.home() / src
     dst_path = Path("~") / dst
@@ -20,9 +20,7 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[str], build: b
     rsync_cmd = ["rsync", "-azc", "--stats"]
 
     if packages:
-        package_list = packages.split()
-
-        for package in package_list:
+        for package in packages:
             package_path = src_dir / package
             if not package_path.exists():
                 print(f"Error: Package directory '{package}' does not exist.")
