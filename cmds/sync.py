@@ -67,6 +67,9 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
         )
 
         if packages:
+            for package in external_packages.iterdir():
+                if package.is_dir() and package.name not in packages:
+                    packages.append(package.name)
             print(f"Building only selected packages: {packages}")
             remote_colcon_cmd += f" --packages-select {' '.join(packages)}"
 
