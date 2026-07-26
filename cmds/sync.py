@@ -23,7 +23,7 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
     rsync_cmd = ["rsync", "-azc", "--stats"]
 
     if packages:
-        external_packages = src_dir / "external_packages"
+        external_packages = src_dir / "external_pkgs"
         if external_packages.exists():
             rsync_cmd.append(str(external_packages))
         for package in packages:
@@ -61,7 +61,7 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
             + "colcon build "
             + f"--base-paths {str(dst_path / 'src')} "
             + f"--build-base {str(dst_path / 'build')} "
-            + f"--install-base {str(dst_path / 'install')}"
+            + f"--install-base {str(dst_path / 'install')} "
             + f"--symlink-install "
         )
 
