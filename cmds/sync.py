@@ -42,22 +42,31 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
 
     rsync_cmd.append(remote_target)
 
-    defaults_file = src_path / "colcon.defaults.yaml"
-    if defaults_file.exists():
-        rsync_cmd.append(str(defaults_file))
-
-    meta = src_path / "colcon.meta"
-    if meta.exists():
-        rsync_cmd.append(str(meta))
-
-    remote_target2 = f"{remote_host}:{dst_root}"
-    rsync_cmd.append(remote_target2)
 
     print(f"Running rsync command: {' '.join(rsync_cmd)}")
     rsync_result = subprocess.run(rsync_cmd)
     if rsync_result.returncode != 0:
         print("Rsync src transfer failed")
         raise RuntimeError("Rsync src transfer failed")
+
+    rsync_cmd2 = ["rsync", "-azc", "--stats"]
+    defaults_file = src_path / "colcon.defaults.yaml"
+    if defaults_file.exists():
+        rsync_cmd2.append(str(defaults_file))
+
+    meta = src_path / "colcon.meta"
+    if meta.exists():
+        rsync_cmd2.append(str(meta))
+
+    remote_target2 = f"{remote_host}:{dst_root}"
+    rsync_cmd2.append(remote_target2)
+
+    if len(rsync_cmd2) > 3:  # Only run if there are files to transfer
+        print(f"Running rsync command: {' '.join(rsync_cmd2)}")
+        rsync_result2 = subprocess.run(rsync_cmd2)
+        if rsync_result2.returncode != 0:
+            print("Rsync meta transfer failed")
+            raise RuntimeError("Rsync meta transfer failed")
     
     print("Source transfer complete!")
 
