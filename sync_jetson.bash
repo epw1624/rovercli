@@ -1,1 +1,1 @@
-python3 main.py sync --remote-host rv@192.168.1.5 --packages cameras_cpp ptz_cam rover_launchers rover_msgs rover_utils rover_manager
+python3 main.py sync --remote-host jetson@192.168.1.5 --packages cameras_cpp ptz_cam rover_launchers rover_msgs rover_utils rover_manager
