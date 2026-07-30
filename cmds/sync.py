@@ -40,6 +40,14 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
         rsync_cmd.append(str(src_dir))
         remote_target = f"{remote_host}:{dst_path}"
 
+    defaults_file = src_path / "colcon.defaults.yaml"
+    if defaults_file.exists():
+        rsync_cmd.append(str(defaults_file))
+
+    meta = src_path / "colcon.meta"
+    if meta.exists():
+        rsync_cmd.append(str(meta))
+
     rsync_cmd.append(remote_target)
 
     print(f"Running rsync command: {' '.join(rsync_cmd)}")
