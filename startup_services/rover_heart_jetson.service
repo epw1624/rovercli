@@ -1,0 +1,23 @@
+[Unit]
+Description=Rover Jetson
+After=network.target
+
+[Service]
+Type=simple
+User=jetson
+
+ExecStart=/bin/bash -c ' \
+    source /opt/ros/humble/setup.bash && \
+    source ${ROVERFLAKE_ROOT}/install/setup.bash && \
+    exec ros2 launch rover_manager heart_start_jetson.launch.py \
+'
+
+WorkingDirectory=$ROVERFLAKE_ROOT
+Restart=always
+RestartSec=5
+
+KillMode=control-group
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
