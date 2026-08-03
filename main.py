@@ -9,6 +9,7 @@ def main():
 
     setup_sync(subparsers)
     setup_print_ip_table(subparsers)
+    setup_time_sync(subparsers)
     args = app.parse_args()
     if hasattr(args, "func"):
         args.func(args)
@@ -45,6 +46,14 @@ def setup_print_ip_table(subparsers):
 
     print_ip_table_parser = subparsers.add_parser("print-ip-table")
     print_ip_table_parser.set_defaults(func=print_ip_table)
+
+def setup_time_sync(subparsers):
+    def time_sync(args):
+        cmds.time_sync()
+
+    time_sync_parser = subparsers.add_parser("time-sync")
+    time_sync_parser.add_argument("--remote-host", default="rover", help="Remote host for time synchronization")
+    time_sync_parser.set_defaults(func=time_sync)
 
 if __name__ == "__main__":
     main()
