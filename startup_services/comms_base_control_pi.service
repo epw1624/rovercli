@@ -1,0 +1,23 @@
+[Unit]
+Description=Rover Pi Comms Base
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+
+ExecStart=/bin/bash -c ' \
+    source /opt/ros/humble/setup.bash && \
+    source /home/ubuntu/RoverFlake2/install/setup.bash && \
+    exec ros2 launch rover_manager heart_start_comms_pi.launch.py \
+'
+
+WorkingDirectory=/home/ubuntu/RoverFlake2
+Restart=always
+RestartSec=5
+
+KillMode=control-group
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

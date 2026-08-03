@@ -1,3 +1,0 @@
-[Unit]
-Description=Rover Pi Comms Base
-After=network.target
