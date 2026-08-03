@@ -3,7 +3,7 @@ from pathlib import Path
 import subprocess
 from typing import Optional
 
-def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], build: bool = True):
+def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], build: bool = True, external_pkgs: bool = False):
 
     src_path = Path.home() / src
     dst_root = Path("~") / dst
@@ -24,9 +24,10 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
     rsync_cmd = ["rsync", "-azc", "--stats"]
 
     if packages:
-        external_packages = src_dir / "external_pkgs"
-        if external_packages.exists():
-            rsync_cmd.append(str(external_packages))
+        if external_pkgs:
+            external_packages = src_dir / "external_pkgs"
+            if external_packages.exists():
+                rsync_cmd.append(str(external_packages))
         for package in packages:
             package_path = src_dir / package
             if not package_path.exists():
@@ -87,9 +88,10 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
         )
 
         if packages:
-            for package in external_packages.iterdir():
-                if package.is_dir() and package.name not in packages:
-                    packages.append(package.name)
+            if external_pkgs:
+                for package in external_packages.iterdir():
+                    if package.is_dir() and package.name not in packages:
+                        packages.append(package.name)
             print(f"Building only selected packages: {packages}")
             remote_colcon_cmd += f" --packages-select {' '.join(packages)}"
 

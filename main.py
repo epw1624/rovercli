@@ -23,6 +23,7 @@ def setup_sync(subparsers):
             remote_host=args.remote_host,
             build=not args.no_build,
             packages=args.packages,
+            external_pkgs=args.external_pkgs,
         )
 
     sync_parser = subparsers.add_parser("sync")
@@ -35,6 +36,7 @@ def setup_sync(subparsers):
         help="Disable building the project after syncing",
     )
     sync_parser.add_argument("--packages", nargs = "+", default=None, help="Space-separated list of packages to transfer and build (e.g., 'arm_control drive_control')")
+    sync_parser.add_argument("--external-pkgs", action="store_true", help="Include external packages in the sync process")
     sync_parser.set_defaults(func=sync)
 
 def setup_print_ip_table(subparsers):
