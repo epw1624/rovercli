@@ -6,7 +6,9 @@ RELAY = ["Relay", "192.168.1.22", "relay"]
 ONBOARD_ANTENNA = ["Onboard Antenna", "192.168.1.21", "rv_bullet"]
 DISH = ["Dish", "192.168.1.20", "dish"]
 BEN = ["Ben's laptop", "192.168.1.55", "ben"]
-ALL_DEVICES = [JETSON, ONBOARD, BASE, COMMS_PI, RELAY, ONBOARD_ANTENNA, DISH, BEN]
+PTZ = ["PTZ Camera", "192.168.1.88", "ptz"]
+RELAY_PI = ["Relay Pi", "192.168.1.52", "relay_pi"]
+ALL_DEVICES = [JETSON, ONBOARD, BASE, COMMS_PI, RELAY, ONBOARD_ANTENNA, DISH, BEN, PTZ, RELAY_PI]
 
 def print_ip_table():
     print("To create an alias, run sudo nano /etc/hosts and paste the following lines:")
