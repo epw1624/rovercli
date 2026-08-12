@@ -3,7 +3,7 @@ from pathlib import Path
 import subprocess
 from typing import Optional
 
-def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], build: bool = True, external_pkgs: bool = False):
+def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], build: bool = True, external_pkgs: bool = True, package_list: Optional[str] = None):
 
     src_path = Path.home() / src
     dst_root = Path("~") / dst
@@ -23,11 +23,18 @@ def sync(src: str, dst: str, remote_host: str, packages: Optional[list[str]], bu
 
     rsync_cmd = ["rsync", "-azc", "--stats"]
 
-    if packages:
+    if packages or package_list:
         if external_pkgs:
             external_packages = src_dir / "external_pkgs"
             if external_packages.exists():
                 rsync_cmd.append(str(external_packages))
+        if package_list:
+            import json
+            with open(package_list, "r") as f:
+                if packages is None:
+                    packages = json.load(f)["packages"]
+                else:
+                    packages.extend(json.load(f)["packages"])
         for package in packages:
             package_path = src_dir / package
             if not package_path.exists():
