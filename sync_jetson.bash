@@ -1,1 +1,0 @@
-python3 main.py sync --remote-host jetson@192.168.1.5 --package-list package_lists/jetson.json
