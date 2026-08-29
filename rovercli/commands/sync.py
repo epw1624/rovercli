@@ -60,10 +60,14 @@ def sync(
     if not build:
         return
 
+    ros_distro = os.environ.get("ROS_DISTRO")
+    if not ros_distro:
+        raise ValueError("ROS_DISTRO environment variable is not set.")
+
     env = os.environ.copy()
     env["MAKEFLAGS"] = "-j3"
     remote_command = (
-        f"cd {dst_root}; source /opt/ros/humble/setup.bash && colcon build "
+        f"cd {dst_root}; source /opt/ros/{ros_distro}/setup.bash && colcon build "
         f"--base-paths {dst_root / 'src'} --build-base {dst_root / 'build'} "
         f"--install-base {dst_root / 'install'} --symlink-install"
     )
