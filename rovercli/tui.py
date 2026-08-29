@@ -1,12 +1,20 @@
 import io
 from contextlib import redirect_stdout
+from pathlib import Path
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
-from textual.widgets import Button, ContentSwitcher, Footer, Header, Input, Label, Log, Static
+from textual.widgets import Button, Checkbox, ContentSwitcher, Footer, Header, Input, Label, Log, Select, Static
 
 from .commands import print_ip_table, sync, time_sync
+
+PACKAGE_LISTS_DIR = Path(__file__).parent / "package_lists"
+
+
+def _package_list_options():
+    files = sorted(PACKAGE_LISTS_DIR.glob("*.yaml"))
+    return [(f.stem, str(f)) for f in files]
 
 
 class RoverApp(App):
@@ -48,6 +56,14 @@ class RoverApp(App):
                             yield Input("RoverFlake2", placeholder="Source root", id="src-root")
                             yield Input("RoverFlake2", placeholder="Destination root", id="dst-root")
                             yield Input("rv@192.168.1.4", placeholder="Remote host", id="remote-host")
+                            yield Select(
+                                _package_list_options(),
+                                prompt="Package list (optional)",
+                                id="package-list",
+                            )
+                            yield Input(placeholder="Extra packages (space separated)", id="extra-packages")
+                            yield Checkbox("Build after sync", value=True, id="build")
+                            yield Checkbox("Include external packages", value=True, id="external-pkgs")
                             yield Button("Run sync", id="run-sync", variant="success")
                         with Vertical(classes="command-panel", id="time-panel"):
                             yield Label("Time sync")
@@ -118,11 +134,17 @@ class RoverApp(App):
         self.query_one("#log", Log).write(output.getvalue())
 
     def _run_sync(self):
+        package_list = self.query_one("#package-list", Select).value
+        extra_packages = self.query_one("#extra-packages", Input).value.split()
         self._write_output(
             sync,
             self.query_one("#src-root", Input).value,
             self.query_one("#dst-root", Input).value,
             remote_host=self.query_one("#remote-host", Input).value,
+            packages=extra_packages or None,
+            build=self.query_one("#build", Checkbox).value,
+            external_pkgs=self.query_one("#external-pkgs", Checkbox).value,
+            package_list=package_list if package_list != Select.BLANK else None,
         )
 
 
