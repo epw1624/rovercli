@@ -1,0 +1,4 @@
+pkgs: 
+  - libgpiod-dev
+  - libpigpio-dev
+  - libpigpiod-dev

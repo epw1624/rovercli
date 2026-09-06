@@ -1,0 +1,9 @@
+# List of base APT packages required for RoverFlake
+pkgs:
+  - curl
+  - git
+  - btop
+  - tmux
+  - libgtkmm-3.0-dev # GUI Package
+  - python3-rosdep
+  - libsfml-dev
