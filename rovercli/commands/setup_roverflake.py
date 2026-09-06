@@ -38,6 +38,17 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
         check_result(result, f"Failed to run setup script: {script}")
 
     render_roverrc(dst, distro, ROVER_ENV_DIR / ".roverrc.template", Path.home() / ".roverrc")
+    ensure_bashrc_sources_roverrc(Path.home() / ".bashrc", Path.home() / ".roverrc")
+
+def ensure_bashrc_sources_roverrc(bashrc_path: Path, roverrc_path: Path):
+    source_line = f"source {roverrc_path}"
+    existing = bashrc_path.read_text() if bashrc_path.exists() else ""
+    if source_line in existing.splitlines():
+        return
+    with open(bashrc_path, "a") as f:
+        if existing and not existing.endswith("\n"):
+            f.write("\n")
+        f.write(f"{source_line}\n")
 
 def install_apt_pkgs(pkg_list_files: list[Path]):
     all_pkgs = []
