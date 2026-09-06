@@ -18,19 +18,24 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
     Sets up the Roverflake environment.
     """
 
+    input("Installing apt packages... Press Enter to continue.")
     install_apt_pkgs(pkg_list_files)
 
-    dst.mkdir(parents=True, exist_ok=True)
-    result = subprocess.run(["git", "clone", ROVERFLAKE_GIT, str(dst)], check=True)
-    check_result(result, "Failed to clone RoverFlake repository.")
+    if dst.exists():
+        print(f"Destination {dst} already exists.")
+    else:
+        input(f"Destination {dst} does not exist. Press Enter to create and clone RoverFlake into it.")
+        dst.mkdir(parents=True, exist_ok=True)
+        result = subprocess.run(["git", "clone", ROVERFLAKE_GIT, str(dst)], check=True)
+        check_result(result, "Failed to clone RoverFlake repository.")
 
     os.environ["ROVERFLAKE_ROOT"] = str(dst)
     os.environ["ROS_DISTRO"] = distro
 
+    input("Running setup scripts... Press Enter to continue.")
     for script in setup_scripts:
         result = subprocess.run(["bash", str(script)], check=True)
         check_result(result, f"Failed to run setup script: {script}")
-
 
     render_roverrc(dst, distro, ROVER_ENV_DIR / ".roverrc.template", Path.home() / ".roverrc")
 
