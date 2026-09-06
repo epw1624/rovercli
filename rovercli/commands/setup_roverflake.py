@@ -40,6 +40,10 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
     render_roverrc(dst, distro, ROVER_ENV_DIR / ".roverrc.template", Path.home() / ".roverrc")
     ensure_bashrc_sources_roverrc(Path.home() / ".bashrc", Path.home() / ".roverrc")
 
+    print("RoverFlake setup complete.")
+    print("Make sure to resource your .bashrc or open a new terminal session.")
+    print("source ~/.bashrc")
+
 def ensure_bashrc_sources_roverrc(bashrc_path: Path, roverrc_path: Path):
     source_line = f"source {roverrc_path}"
     existing = bashrc_path.read_text() if bashrc_path.exists() else ""
@@ -62,7 +66,6 @@ def install_apt_pkgs(pkg_list_files: list[Path]):
         check_result(result, "Failed to obtain sudo privileges.")
         result = subprocess.run(["sudo", "apt", "update"], check=True)
         check_result(result, "Failed to update APT package list.")
-
         result = subprocess.run(["sudo", "apt", "install", "-y", *all_pkgs], check=True)
         check_result(result, "Failed to install APT packages.")
 
