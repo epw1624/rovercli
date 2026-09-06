@@ -1,7 +1,7 @@
 source $ROVERFLAKE_ROOT/setup_scripts/utils/common.sh
 
 echo CHECKING FOR ROS2 BASE
-if is_package_installed "ros-$ROS_DISTRO-base"; then
+if is_package_installed "ros-$ROS_DISTRO-ros-base"; then
     echo ROS $ROS_DISTRO FOR $USER IS ALREADY INSTALLED
 else
     locale  # check for UTF-8
@@ -23,14 +23,11 @@ else
     sudo dpkg -i /tmp/ros2-apt-source.deb
     
     sudo apt update
-    sudo apt upgrade -y
 
     # now we have ros2 apt packages. celebrate this.
-    sudo apt install -y ros-$ROS_DISTRO-base
+    sudo apt install -y ros-$ROS_DISTRO-ros-base
     sudo apt install -y ros-dev-tools
 
-    echo source /opt/ros/$ROS_DISTRO/setup.bash >> ~/.bashrc
-    source ~/.bashrc
 fi
 
 echo install-ros2-base.sh complete for $ROS_DISTRO.

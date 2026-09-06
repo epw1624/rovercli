@@ -23,14 +23,11 @@ else
     sudo dpkg -i /tmp/ros2-apt-source.deb
     
     sudo apt update
-    sudo apt upgrade -y
 
     # now we have ros2 apt packages. celebrate this.
     sudo apt install -y ros-$ROS_DISTRO-desktop
     sudo apt install -y ros-dev-tools
 
-    echo source /opt/ros/$ROS_DISTRO/setup.bash >> ~/.bashrc
-    source ~/.bashrc
 fi
 
 echo install-ros2-desktop.sh complete for $ROS_DISTRO.
