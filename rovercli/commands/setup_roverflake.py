@@ -42,10 +42,12 @@ def install_apt_pkgs(pkg_list_files: list[Path]):
             all_pkgs.extend(data.get("pkgs", []))
 
     if all_pkgs:
-        result = subprocess.run(["sudo", "-v", "apt", "update"], check=True)
+        result = subprocess.run(["sudo", "-v"], check=True)
+        check_result(result, "Failed to obtain sudo privileges.")
+        result = subprocess.run(["sudo", "apt", "update"], check=True)
         check_result(result, "Failed to update APT package list.")
 
-        result = subprocess.run(["sudo", "-v", "apt", "install", "-y", *all_pkgs], check=True)
+        result = subprocess.run(["sudo", "apt", "install", "-y", *all_pkgs], check=True)
         check_result(result, "Failed to install APT packages.")
 
 def check_result(result: subprocess.CompletedProcess, error_message: str):
