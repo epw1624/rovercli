@@ -72,6 +72,6 @@ def check_result(result: subprocess.CompletedProcess, error_message: str):
 
 def render_roverrc(dst_root: Path, ros_distro: str, template_path: Path, out_path: Path):
     text = template_path.read_text()
-    rendered = ShellTemplate(text).substitute(ROVERFLAKE_ROOT=str(dst_root), ROS_DISTRO=ros_distro)
+    rendered = ShellTemplate(text).substitute(ROVERFLAKE_ROOT=str(dst_root), ROVERCLI_ROOT=str(PACKAGE_ROOT), ROS_DISTRO=ros_distro)
     out_path.write_text(rendered)
     out_path.chmod(0o644)
